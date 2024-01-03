@@ -50,6 +50,22 @@ class TopicHandlerResults(BaseModel):
     handlers: list[TopicHandlerResult] = []
 
 
+def _make_topic_handler_status(exit_status: int | None, runtime: float) -> TopicHandlerStatus:
+    return TopicHandlerStatus(
+        success=(exit_status == 0),
+        timed_out=(exit_status is None),
+        exit_status=exit_status,
+        runtime_ms=int(runtime * 1000),
+    )
+
+def _make_topic_handler_output(output: bytes, max_len: int) -> TopicHandlerOutput:
+    return TopicHandlerOutput(
+        truncated=len(output) > max_len,
+        length=len(output),
+        output=output[:max_len],
+    )
+
+
 @dataclass
 class RespondTool:
     settings: RespondSettings = field(default_factory=RespondSettings)
@@ -73,40 +89,19 @@ class RespondTool:
         )
         return results
 
-    def _list_dirs(self, directory: str) -> list[str]:
-        return sorted(
-            f for f in os.listdir(directory)
-            if os.path.isdir(os.path.join(directory, f))
-        )
-
-    def _list_files(self, directory: str) -> list[str]:
-        return sorted(
-            f for f in os.listdir(directory)
-            if os.path.isfile(os.path.join(directory, f))
-        )
-
     def _list_handlers(self, topic_name: str) -> list[str]:
         topic_dir = os.path.join(self.settings.topics_dir, topic_name)
         logging.info("Scanning for topic handlers in %s", topic_dir)
-        return self._list_files(topic_dir)
+        return sorted(
+            f for f in os.listdir(topic_dir)
+            if os.path.isfile(os.path.join(topic_dir, f))
+        )
 
     def _list_topics(self) -> list[str]:
         logging.info("Scanning for topics in %s", self.settings.topics_dir)
-        return self._list_dirs(self.settings.topics_dir)
-
-    def _make_topic_handler_status(self, exit_status: int | None, runtime: float) -> TopicHandlerStatus:
-        return TopicHandlerStatus(
-            success=(exit_status == 0),
-            timed_out=(exit_status is None),
-            exit_status=exit_status,
-            runtime_ms=int(runtime * 1000),
-        )
-
-    def _make_topic_handler_output(self, output: bytes, max_len: int) -> TopicHandlerOutput:
-        return TopicHandlerOutput(
-            truncated=len(output) > max_len,
-            length=len(output),
-            output=output[:max_len],
+        return sorted(
+            f for f in os.listdir(self.settings.topics_dir)
+            if os.path.isdir(os.path.join(self.settings.topics_dir, f))
         )
 
     def _invoke_topic_handler(self, topic_name: str, handler: str, input: bytes | None) -> TopicHandlerResult:
@@ -123,16 +118,16 @@ class RespondTool:
                 stderr=subprocess.PIPE,
             )
             duration = time.time() - start_time
-            status = self._make_topic_handler_status(p.returncode, duration)
+            status = _make_topic_handler_status(p.returncode, duration)
             stdout = p.stdout
             stderr = p.stderr
         except subprocess.TimeoutExpired as e:
-            status = self._make_topic_handler_status(None, self.settings.handler_timeout)
+            status = _make_topic_handler_status(None, self.settings.handler_timeout)
             stdout = e.stdout or b""
             stderr = e.stderr or b""
         return TopicHandlerResult(
             name=handler,
             status=status,
-            stdout=self._make_topic_handler_output(stdout, self.settings.handler_output_limit),
-            stderr=self._make_topic_handler_output(stderr, self.settings.handler_output_limit),
+            stdout=_make_topic_handler_output(stdout, self.settings.handler_output_limit),
+            stderr=_make_topic_handler_output(stderr, self.settings.handler_output_limit),
         )

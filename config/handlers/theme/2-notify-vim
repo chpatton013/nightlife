@@ -1,4 +1,19 @@
-#!/bin/bash --norc
-set -euo pipefail
+#!/usr/bin/env python3
 
-pkill -USR1 -x vim || true
+import os
+import signal
+
+from nightlife.topic_handler_utils import STATE_HOME, pkill, topic_state_file
+
+NIGHTLIFE_THEMEFILE = topic_state_file("theme", "theme")
+VIM_THEMEFILE = os.path.join(STATE_HOME, "vim/theme")
+
+
+if __name__ == "__main__":
+    try:
+        os.unlink(VIM_THEMEFILE)
+    except FileNotFoundError:
+        pass
+    os.makedirs(os.path.dirname(VIM_THEMEFILE), exist_ok=True)
+    os.symlink(NIGHTLIFE_THEMEFILE, VIM_THEMEFILE)
+    pkill("vim", signal.SIGUSR1)

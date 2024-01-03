@@ -1,21 +1,20 @@
-"""
-Usage:
-
-    uvicorn principal:app --host=0.0.0.0 --port=8000 --reload
-"""
-
-import argparse
+import base64
 import logging
-import os
 from collections import defaultdict
 
 from fastapi import FastAPI, Request, HTTPException, Response
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from dispatch import BroadcastTool, DispatchSettings, TriggerTool
-from respond import RespondTool
-from state import PRINCIPAL_LOCKFILE
+from .dispatch import BroadcastTool, DispatchSettings, TriggerTool
+from .respond import RespondTool
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s|%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 
 class PrincipalSettings(BaseSettings):
@@ -53,7 +52,7 @@ class GetAgents(BaseModel):
 class PutAgent(BaseModel):
     host: str
     key_path: str
-    key_password: bytes | None
+    key_password_b64: str | None
     events: set[str]
 
 
@@ -101,11 +100,15 @@ async def put_agent(agent_name: str, agent: PutAgent) -> None:
     global AGENTS
     global AGENTS_BY_EVENT
 
+    key_password: bytes | None = None
+    if agent.key_password_b64:
+        key_password = base64.b64decode(agent.key_password_b64)
+
     AGENTS[agent_name] = Agent(
         name=agent_name,
         host=agent.host,
         key_path=agent.key_path,
-        key_password=agent.key_password,
+        key_password=key_password,
         events=agent.events,
     )
 

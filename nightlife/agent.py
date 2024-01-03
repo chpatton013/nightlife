@@ -1,9 +1,3 @@
-"""
-Usage:
-
-    uvicorn agent:app --port=8001
-"""
-
 import logging
 import os
 import threading
@@ -21,11 +15,18 @@ from watchdog.events import (
     FileSystemEventHandler,
 )
 
-from respond import (
+from .respond import (
     RespondTool,
     TopicHandlerResults,
     TopicHandlers,
     TopicRegistry,
+)
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s|%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
 )
 
 
@@ -39,15 +40,6 @@ class AgentSettings(BaseSettings):
 
 
 SETTINGS = AgentSettings()
-
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s|%(levelname)s] %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-)
-
-
 PUBLIC_KEY = b""
 
 

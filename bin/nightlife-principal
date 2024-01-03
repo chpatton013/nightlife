@@ -1,14 +1,35 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
+import subprocess
 import sys
 
-from nightlife.state import PRINCIPAL_LOCKFILE
+from nightlife.state import PRINCIPAL_LOCKFILE, write_lockfile
 
 
 if __name__ == "__main__":
-    cmd = [
-        sys.argv[0], "-m", "nightlife.run_server",
-        PRINCIPAL_LOCKFILE, "--host=0.0.0.0"
-    ] + sys.argv[1:]
-    os.execvp(cmd[0], cmd)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--host", default="0.0.0.0")
+    parser.add_argument("--port", type=int, default=8000)
+    args, extra_args = parser.parse_known_args()
+
+    write_lockfile(PRINCIPAL_LOCKFILE, args.host, args.port)
+
+    try:
+        p = subprocess.run(
+            [
+                "uvicorn",
+                "nightlife.principal:app",
+                f"--host={args.host}",
+                f"--port={args.port}",
+            ] + extra_args,
+            stdin=sys.stdin,
+        )
+        returncode = p.returncode
+    except KeyboardInterrupt:
+        returncode = 0
+    finally:
+        os.unlink(PRINCIPAL_LOCKFILE)
+
+    sys.exit(returncode)

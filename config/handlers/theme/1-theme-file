@@ -1,6 +1,12 @@
-#!/bin/bash --norc
-set -euo pipefail
+#!/usr/bin/env python3
 
-theme_file="${XDG_STATE_HOME:-$HOME/.local/state}/nightlife/theme"
-mkdir -p "$(dirname "$theme_file")"
-cat >"$theme_file"
+import os
+import sys
+
+from nightlife.topic_handler_utils import topic_state_file
+
+THEMEFILE = topic_state_file("theme", "theme")
+
+os.makedirs(os.path.dirname(THEMEFILE), exist_ok=True)
+with open(THEMEFILE, "w") as f:
+    f.write(sys.stdin.read())
