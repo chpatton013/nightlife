@@ -1,0 +1,7 @@
+cryptography>=41.0
+fastapi[all]>=0.104,<1.0
+pydantic-settings>=2.1
+pydantic>=2.5
+pyjwt[crypto]>=2.8
+uvicorn[standard]>=0.24,<1.0
+watchdog>=3.0

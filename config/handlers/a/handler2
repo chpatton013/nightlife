@@ -1,0 +1,2 @@
+#!/bin/bash --norc
+echo handler2 stdout

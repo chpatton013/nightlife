@@ -1,0 +1,6 @@
+#!/bin/bash --norc
+set -euo pipefail
+
+theme_file="${XDG_STATE_HOME:-$HOME/.local/state}/nightlife/theme"
+mkdir -p "$(dirname "$theme_file")"
+cat >"$theme_file"

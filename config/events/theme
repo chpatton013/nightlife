@@ -1,0 +1,8 @@
+#!/bin/bash --norc
+set -euo pipefail
+
+function read_theme() {
+  defaults read -g AppleInterfaceStyle 2>/dev/null || true
+}
+
+[[ $(read_theme) =~ ^Dark ]] && echo dark || echo light

@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+import argparse
+import logging
+import sys
+
+from nightlife.dispatch import DispatchTool
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s|%(levelname)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("event")
+    parser.add_argument("agent_host")
+    parser.add_argument("private_key_file")
+    args = parser.parse_args()
+
+    password: bytes | None = None
+    if sys.stdin:
+        if sys.stdin.isatty():
+            password = input(f"Enter decryption password for private keyfile (or empty if unencrypted):\n$ ").encode()
+        else:
+            logging.info("Reading private keyfile decryption password from stdin")
+            password = sys.stdin.buffer.read()
+
+    if not password:
+        logging.info("Private keyfile is assumed to be unencrypted")
+
+    dispatch = DispatchTool(
+        agent_host=args.agent_host,
+        private_key_file=args.private_key_file,
+        private_key_password=password,
+    )
+    sys.stdout.buffer.write(dispatch.dispatch(args.event))

@@ -1,0 +1,3 @@
+#!/bin/bash --norc
+echo handler1 stdout
+echo handler1 stderr >&2
