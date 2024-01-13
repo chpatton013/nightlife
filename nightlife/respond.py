@@ -7,11 +7,13 @@ from dataclasses import dataclass, field
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from .config import config_file
+
 
 class RespondSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="NIGHTLIFE_RESPOND_")
 
-    topics_dir: str = "config/handlers"
+    topics_dir: str = config_file("handlers")
     handler_timeout: int = 15
     handler_output_limit: int = 1024
 

@@ -8,7 +8,7 @@ import sys
 import urllib.request
 from urllib.error import HTTPError
 
-from nightlife.state import PRINCIPAL_LOCKFILE
+from nightlife.config import PRINCIPAL_LOCKFILE
 
 
 if __name__ == "__main__":

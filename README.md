@@ -12,6 +12,8 @@ make install prefix=$HOME/.local
 ~/Library/LaunchAgents/ke.bou.dark-mode-notify.plist
 launchctl load -w ~/Library/LaunchAgents/ke.bou.dark-mode-notify.plist
 
+Install bins and configs through pip
+
 ## The Pitch
 
 Nightlife is a web service that accepts notifications on named topics with

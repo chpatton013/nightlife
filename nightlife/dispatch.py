@@ -15,11 +15,13 @@ from cryptography.hazmat.primitives.serialization import (
 import jwt
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from .config import config_file
+
 
 class DispatchSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="NIGHTLIFE_DISPATCH_")
 
-    events_dir: str = "config/events"
+    events_dir: str = config_file("events")
     event_timeout: int = 30
     timesync_tolerance: int = 30
     jwt_issuer: str = "urn:nightlife:principal"

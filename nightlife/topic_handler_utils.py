@@ -2,13 +2,13 @@ import os
 
 import psutil
 
-from .state import STATE_DIR, STATE_HOME
+from .config import STATE_HOME, state_file
 
 __all__ = ["STATE_HOME", "topic_state_file", "pkill"]
 
 
 def topic_state_file(topic: str, *parts: str) -> str:
-    return os.path.join(STATE_DIR, topic, *parts)
+    return state_file(topic, *parts)
 
 
 def pkill(name: str, signum: int) -> None:
