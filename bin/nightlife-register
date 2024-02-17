@@ -1,5 +1,20 @@
 #!/usr/bin/env python3
 
+"""
+Register an agent server with a running principal server. An agent is described
+by a name, its server address, the path to the private keyfile the principal
+should use to identify itself, and the list of events that should be dispatched
+to the agent.
+
+This tool makes an HTTP PUT request against the /agent/$agent endpoint of the
+target principal server for the given agent name. The body of the HTTP response
+is written to stdout.
+
+By default, the principal server address is read from the principal server
+lockfile on the local machine. However, if the principal you want to notify is
+on a different machine, you can specify a custom server address.
+"""
+
 import argparse
 import base64
 import json
@@ -40,7 +55,7 @@ if __name__ == "__main__":
             agent_key_password = sys.stdin.buffer.read()
 
     if not agent_key_password:
-        logging.info("Agent keyfile is assumed to be unencrypted")
+        logging.warning("Agent keyfile is assumed to be unencrypted")
 
     body = {
         "host": args.agent_host,

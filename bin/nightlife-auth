@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+Generate a public/private ed25519 keypair.
+
+This tool should be run on the principal machine, and then the public key should
+be copied to the agent machine. This allows the principal to identify itself to
+the agent securely.
+"""
+
 import argparse
 import logging
 import os
@@ -17,7 +25,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import (
 )
 
 
-def generate_keys(password: bytes | None) -> (bytes, bytes):
+def generate_keys(password: bytes | None) -> tuple[bytes, bytes]:
     privkey = Ed25519PrivateKey.generate()
     privkey_bytes = privkey.private_bytes(
         Encoding.PEM,
@@ -56,7 +64,7 @@ if __name__ == "__main__":
         logging.info("stdin is closed")
 
     if not password:
-        logging.info("Private keyfile will not be encrypted")
+        logging.warning("Private keyfile will not be encrypted")
 
     privkey_bytes, pubkey_bytes = generate_keys(password or None)
 

@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+"""
+Run the nightlife agent server application.
+
+Server address information is written to the agent lockfile before invoking the
+server.
+
+This executable invokes uvicorn to run the webserver as a subprocess.
+"""
+
 import argparse
 import os
 import subprocess

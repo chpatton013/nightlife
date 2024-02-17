@@ -78,6 +78,14 @@ machines using the Dispatch tool.
 ## Testing
 
 ```
+./scripts/install install server principal
+./scripts/install install server agent
+./scripts/install install --enable event theme ./examples/events/theme-macos --run-under=dark-mode-notify
+./scripts/install install --enable topic theme ./examples/handlers/theme
+./scripts/install install --enable handler theme ./examples/handlers/theme/{1-theme-file,2-notify-nvim,2-notify-vim}
+```
+
+```
 bin/nightlife-principal --reload
 bin/nightlife-agent --reload
 bin/nightlife-register localagent http://127.0.0.1:8001 config/auth/keys/priv theme 0<&-

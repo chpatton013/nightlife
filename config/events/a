@@ -1,3 +1,2 @@
-#!/bin/bash --norc
-set -euo pipefail
-echo dark
+#!/bin/sh
+exec date

@@ -140,6 +140,7 @@ async def post_dispatch(event_name: str) -> None:
     try:
         body = TriggerTool(settings=settings).trigger(event_name)
     except:
+        logging.exception("Failed to trigger event: %s", event_name)
         raise HTTPException(500, "trigger failed")
 
     try:

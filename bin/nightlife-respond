@@ -6,6 +6,14 @@ import sys
 
 from nightlife.respond import RespondTool
 
+"""
+List or invoke all topic handlers for the given topic name. Topic name may be
+omitted when listing.
+
+This tool is a command-line alternative to running an agent server, or (more
+likely) a handler development/debugging aid.
+"""
+
 
 if __name__ == "__main__":
     logging.basicConfig(

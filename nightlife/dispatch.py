@@ -21,7 +21,7 @@ from .config import config_file
 class DispatchSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="NIGHTLIFE_DISPATCH_")
 
-    events_dir: str = config_file("events")
+    events_dir: str = config_file("enabled/events")
     event_timeout: int = 30
     timesync_tolerance: int = 30
     jwt_issuer: str = "urn:nightlife:principal"
@@ -33,7 +33,7 @@ class TriggerTool:
     settings: DispatchSettings = field(default_factory=DispatchSettings)
 
     def trigger(self, event: str) -> bytes:
-        logging.info("Triggering event %s", event)
+        logging.info("Triggering event: %s", event)
         event_path = os.path.join(self.settings.events_dir, event)
         p = subprocess.run(
             [event_path],

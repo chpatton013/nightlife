@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+import signal
+
+from nightlife.topic_handler_utils import (
+    pkill, symlink, system_state_file, topic_state_file
+)
+
+NIGHTLIFE_THEMEFILE = topic_state_file("theme", "themefile")
+VIM_THEMEFILE = system_state_file("vim/theme")
+
+
+if __name__ == "__main__":
+    symlink(NIGHTLIFE_THEMEFILE, VIM_THEMEFILE)
+    pkill("vim", signal.SIGUSR1)

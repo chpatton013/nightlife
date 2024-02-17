@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 
+"""
+Notify a running principal server that an event should be dispatched.
+
+This tool makes an HTTP POST request against the /dispatch/$event endpoint of
+the target principal server for the given event name. The body of the HTTP
+response is written to stdout.
+
+By default, the principal server address is read from the principal server
+lockfile on the local machine. However, if the principal you want to notify is
+on a different machine, you can specify a custom server address.
+"""
+
 import argparse
 import logging
 import sys

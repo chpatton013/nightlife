@@ -15,6 +15,16 @@ STATE_HOME = os.getenv(
 STATE_DIR = os.path.join(STATE_HOME, "nightlife")
 
 
+def app_file(*parts: str) -> str:
+    """
+    TODO: replace this with something portable post-installation
+    """
+    import nightlife
+    module = os.path.dirname(nightlife.__file__)
+    app = os.path.dirname(module)
+    return os.path.join(app, *parts)
+
+
 def config_file(*parts: str) -> str:
     return os.path.join(CONFIG_DIR, *parts)
 

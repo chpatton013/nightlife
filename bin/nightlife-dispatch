@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""
+Trigger an event executable and broadcast its output to a specified agent host.
+
+This tool is a command-line alternative to running a principal server, or (more
+likely) an event development/debugging aid.
+"""
+
 import argparse
 import logging
 import sys
