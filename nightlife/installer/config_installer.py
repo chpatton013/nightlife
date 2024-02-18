@@ -16,7 +16,7 @@ def _enable_handlers(topic_name: str, handler_names: list[str]) -> None:
     for handler_name in handler_names:
         symlink(
             config_file("handlers", topic_name, handler_name),
-            config_file("enabled", "handlers", topic_name, handler_name),
+            config_file("enabled/handlers", topic_name, handler_name),
         )
 
 
@@ -29,12 +29,12 @@ class ConfigInstaller(InstallerInterface):
         logging.debug("Running ConfigInstaller enable hook for event %s", args.event_name)
         symlink(
             config_file("events", args.event_name),
-            config_file("enabled", "events", args.event_name),
+            config_file("enabled/events", args.event_name),
         )
 
     def disable_event(self, args: argparse.Namespace) -> None:
         logging.debug("Running ConfigInstaller disable hook for event %s", args.event_name)
-        unlink(config_file("enabled", "events", args.event_name))
+        unlink(config_file("enabled/events", args.event_name))
 
     def uninstall_event(self, args: argparse.Namespace) -> None:
         logging.debug("Running ConfigInstaller uninstall hook for event %s", args.event_name)
@@ -52,7 +52,7 @@ class ConfigInstaller(InstallerInterface):
 
     def disable_topic(self, args: argparse.Namespace) -> None:
         logging.debug("Running ConfigInstaller disable hook for topic %s", args.topic_name)
-        unlink(config_file("enabled", "handlers", args.topic_name))
+        unlink(config_file("enabled/handlers", args.topic_name))
 
     def uninstall_topic(self, args: argparse.Namespace) -> None:
         logging.debug("Running ConfigInstaller uninstall hook for topic %s", args.topic_name)
@@ -69,7 +69,7 @@ class ConfigInstaller(InstallerInterface):
     def disable_handler(self, args: argparse.Namespace) -> None:
         logging.debug("Running ConfigInstaller disable hook for topic %s with handlers %s", args.topic_name, str(args.handler_name))
         for handler_name in args.handler_name:
-            unlink(config_file("enabled", "handlers", args.topic_name, handler_name))
+            unlink(config_file("enabled/handlers", args.topic_name, handler_name))
 
     def uninstall_handler(self, args: argparse.Namespace) -> None:
         logging.debug("Running ConfigInstaller uninstall hook for topic %s with handlers %s", args.topic_name, str(args.handler_name))

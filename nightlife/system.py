@@ -6,12 +6,17 @@ import psutil
 
 
 def pkill(name: str, signum: int) -> None:
-    for p in psutil.process_iter(["name", "exe", "cmdline"]):
+    for p in psutil.process_iter(attrs=["name", "exe", "cmdline"]):
+        # Process.info property is conditionally set based on attrs argument to
+        # psutil.process_iter. Since this property normally doesn't exist, we
+        # need to assert its presence to satisfy mypy that it actually does.
+        assert hasattr(p, "info")
         if (
             p.info["name"] == name or
             (p.info["exe"] and os.path.basename(p.info["exe"]) == name) or
             (p.info["cmdline"] and os.path.basename(p.info["cmdline"][0]) == name)
         ):
+            logging.debug("Sending signal %d to %s process %d", signum, p.name(), p.pid)
             p.send_signal(signum)
 
 
