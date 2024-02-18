@@ -35,6 +35,25 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
 ]
 
+[project.optional-dependencies]
+tests = [
+  "mypy>=1.8",
+  "types-psutil>=5.9",
+]
+dev = [
+  "black>=24.2",
+]
+
+[project.scripts]
+nightlife-agent = "scripts.nightlife-agent:main"
+nightlife-auth = "scripts.nightlife-auth:main"
+nightlife-dispatch = "scripts.nightlife-dispatch:main"
+nightlife-install = "scripts.nightlife-install:main"
+nightlife-notify = "scripts.nightlife-notify:main"
+nightlife-principal = "scripts.nightlife-principal:main"
+nightlife-register = "scripts.nightlife-register:main"
+nightlife-respond = "scripts.nightlife-respond:main"
+
 [project.urls]
 Repository = "https://github.com/chpatton013/nightlife.git"
-Issues = "https://github.com/chpatton013/nightlife/issues"
+"Bug Tracker" = "https://github.com/chpatton013/nightlife/issues"
