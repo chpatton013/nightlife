@@ -2,6 +2,11 @@ import os
 import urllib.parse
 
 
+BIN_HOME = os.getenv(
+    "XDG_BIN_HOME",
+    os.path.join(os.path.expanduser("~"), ".local/bin")
+)
+
 CONFIG_HOME = os.getenv(
     "XDG_CONFIG_HOME",
     os.path.join(os.path.expanduser("~"), ".config")

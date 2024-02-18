@@ -4,7 +4,7 @@ import os
 # import subprocess
 from dataclasses import dataclass
 
-from nightlife.config import app_file
+from nightlife.config import BIN_HOME, app_file
 from nightlife.system import symlink
 from nightlife.installer.argument_parser import ArgumentParser
 from nightlife.installer.installer_interface import InstallerInterface
@@ -142,13 +142,15 @@ def _uninstall_service(service_id: str, service_dir: str) -> None:
 class LaunchdInstaller(InstallerInterface):
     def augment_parser(self, parser: ArgumentParser) -> ArgumentParser:
         parser.root.add_argument("--service-dir", default=DEFAULT_SERVICE_DIR)
+        parser.install_server.add_argument("--bin-dir", default=BIN_HOME)
+        parser.install_event.add_argument("--bin-dir", default=BIN_HOME)
         return parser
 
     def install_server(self, args: argparse.Namespace) -> None:
         logging.debug("Running LaunchdInstaller install hook for server %s", args.server_name)
         service = Service(
             service_id=_server_id(args.server_name),
-            program_arguments=[f"nightlife-{args.server_name}"],
+            program_arguments=[os.path.join(args.bin_dir, f"nightlife-{args.server_name}")],
             template_dir=args.template_dir,
             service_dir=args.service_dir,
             state_dir=args.state_dir,
@@ -172,7 +174,7 @@ class LaunchdInstaller(InstallerInterface):
         service = Service(
             service_id=_event_id(args.event_name),
             program_arguments=args.run_under + [
-                "nightlife-notify",
+                os.path.join(args.bin_dir, "nightlife-notify"),
                 args.event_name,
             ],
             template_dir=args.template_dir,
