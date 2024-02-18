@@ -26,9 +26,9 @@ from urllib.error import HTTPError
 from nightlife.config import PRINCIPAL_LOCKFILE
 
 
-if __name__ == "__main__":
+def main() -> None:
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG if os.getenv("DEBUG") else logging.INFO,
         format="%(asctime)s|%(levelname)s] %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
@@ -79,3 +79,7 @@ if __name__ == "__main__":
     except HTTPError as e:
         logging.error("%d %s", e.code, e.msg)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

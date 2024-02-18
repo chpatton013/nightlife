@@ -20,9 +20,9 @@ import urllib.request
 from nightlife.config import PRINCIPAL_LOCKFILE
 
 
-if __name__ == "__main__":
+def main() -> None:
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.DEBUG if os.getenv("DEBUG") else logging.INFO,
         format="%(asctime)s|%(levelname)s] %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
@@ -43,3 +43,7 @@ if __name__ == "__main__":
     request = urllib.request.Request(url, method="POST")
     with urllib.request.urlopen(request) as f:
         sys.stdout.buffer.write(f.read())
+
+
+if __name__ == "__main__":
+    main()

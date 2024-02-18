@@ -1,5 +1,6 @@
 import base64
 import logging
+import os
 from collections import defaultdict
 
 from fastapi import FastAPI, Request, HTTPException, Response
@@ -11,7 +12,7 @@ from .respond import RespondTool
 
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG if os.getenv("DEBUG") else logging.INFO,
     format="%(asctime)s|%(levelname)s] %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )

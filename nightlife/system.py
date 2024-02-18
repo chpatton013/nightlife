@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import subprocess
 
 import psutil
 
@@ -54,3 +55,16 @@ def copy(src: str, dst: str) -> None:
     unlink(dst)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.copy(src, dst)
+
+
+def which(executable: str) -> str | None:
+    try:
+        p = subprocess.run(
+            ["which", executable],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+        return p.stdout.decode()
+    except subprocess.CalledProcessError:
+        return None
