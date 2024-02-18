@@ -50,7 +50,9 @@ def _read_public_key(public_key_file: str) -> None:
         with open(public_key_file, "rb") as f:
             PUBLIC_KEY = f.read()
     except Exception as e:
-        logging.error("Failed to read public key file '%s': %s", public_key_file, str(e))
+        logging.error(
+            "Failed to read public key file '%s': %s", public_key_file, str(e)
+        )
         PUBLIC_KEY = b""
 
 
@@ -109,7 +111,9 @@ async def lifespan(_: FastAPI):
     event_handler = PublicKeyFileEventHandler(SETTINGS.public_key_file)
 
     observer = Observer()
-    observer.schedule(event_handler, os.path.dirname(SETTINGS.public_key_file), recursive=True)
+    observer.schedule(
+        event_handler, os.path.dirname(SETTINGS.public_key_file), recursive=True
+    )
 
     event_handler.start()
     observer.start()
@@ -133,7 +137,9 @@ async def authenticate(request: Request, call_next):
         if authorization is None or authorization.scheme.lower() != "bearer":
             raise HTTPException(401, "Unauthorized: missing bearer token")
         token = authorization.credentials
-        payload = jwt.decode(token, PUBLIC_KEY, audience=SETTINGS.jwt_audience, algorithms=["EdDSA"])
+        payload = jwt.decode(
+            token, PUBLIC_KEY, audience=SETTINGS.jwt_audience, algorithms=["EdDSA"]
+        )
 
         if payload.get("iss") != SETTINGS.jwt_issuer:
             raise HTTPException(401, "Unauthorized: invalid iss")
@@ -181,7 +187,9 @@ async def get_topic(topic_name: str) -> TopicHandlers:
 
 
 @app.post("/topic/{topic_name}")
-async def post_topic(topic_name: str, body: bytes = Depends(_await_body)) -> TopicHandlerResults:
+async def post_topic(
+    topic_name: str, body: bytes = Depends(_await_body)
+) -> TopicHandlerResults:
     try:
         return RespondTool().handle_topic(topic_name, body)
     except FileNotFoundError:

@@ -11,8 +11,10 @@ def install(installer: Installer, argv: list[str] | None = None) -> None:
 
 
 def install_launchd(argv: list[str] | None = None) -> None:
-    installer = Installer([
-        ConfigInstaller(),
-        LaunchdInstaller(),
-    ])
+    installer = Installer(
+        [
+            ConfigInstaller(),
+            LaunchdInstaller(),
+        ]
+    )
     install(installer, argv)

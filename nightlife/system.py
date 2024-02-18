@@ -13,9 +13,9 @@ def pkill(name: str, signum: int) -> None:
         # need to assert its presence to satisfy mypy that it actually does.
         assert hasattr(p, "info")
         if (
-            p.info["name"] == name or
-            (p.info["exe"] and os.path.basename(p.info["exe"]) == name) or
-            (p.info["cmdline"] and os.path.basename(p.info["cmdline"][0]) == name)
+            p.info["name"] == name
+            or (p.info["exe"] and os.path.basename(p.info["exe"]) == name)
+            or (p.info["cmdline"] and os.path.basename(p.info["cmdline"][0]) == name)
         ):
             logging.debug("Sending signal %d to %s process %d", signum, p.name(), p.pid)
             p.send_signal(signum)
@@ -28,7 +28,9 @@ def unlink(path: str) -> None:
         try:
             os.rmdir(path)
         except OSError:
-            logging.error("Refusing to delete %s because it is a non-empty directory", path)
+            logging.error(
+                "Refusing to delete %s because it is a non-empty directory", path
+            )
             raise
     except FileNotFoundError:
         pass

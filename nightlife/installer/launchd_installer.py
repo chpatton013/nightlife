@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+
 # import subprocess
 from dataclasses import dataclass
 
@@ -147,10 +148,14 @@ class LaunchdInstaller(InstallerInterface):
         return parser
 
     def install_server(self, args: argparse.Namespace) -> None:
-        logging.debug("Running LaunchdInstaller install hook for server %s", args.server_name)
+        logging.debug(
+            "Running LaunchdInstaller install hook for server %s", args.server_name
+        )
         service = Service(
             service_id=_server_id(args.server_name),
-            program_arguments=[os.path.join(args.bin_dir, f"nightlife-{args.server_name}")],
+            program_arguments=[
+                os.path.join(args.bin_dir, f"nightlife-{args.server_name}")
+            ],
             template_dir=args.template_dir,
             service_dir=args.service_dir,
             state_dir=args.state_dir,
@@ -158,22 +163,31 @@ class LaunchdInstaller(InstallerInterface):
         _install_service(service)
 
     def enable_server(self, args: argparse.Namespace) -> None:
-        logging.debug("Running LaunchdInstaller enable hook for server %s", args.server_name)
+        logging.debug(
+            "Running LaunchdInstaller enable hook for server %s", args.server_name
+        )
         _enable_service(_server_id(args.server_name))
 
     def disable_server(self, args: argparse.Namespace) -> None:
-        logging.debug("Running LaunchdInstaller disable hook for server %s", args.server_name)
+        logging.debug(
+            "Running LaunchdInstaller disable hook for server %s", args.server_name
+        )
         _disable_service(_server_id(args.server_name))
 
     def uninstall_server(self, args: argparse.Namespace) -> None:
-        logging.debug("Running LaunchdInstaller uninstall hook for server %s", args.server_name)
+        logging.debug(
+            "Running LaunchdInstaller uninstall hook for server %s", args.server_name
+        )
         _uninstall_service(_server_id(args.server_name), args.service_dir)
 
     def install_event(self, args: argparse.Namespace) -> None:
-        logging.debug("Running LaunchdInstaller install hook for event %s", args.event_name)
+        logging.debug(
+            "Running LaunchdInstaller install hook for event %s", args.event_name
+        )
         service = Service(
             service_id=_event_id(args.event_name),
-            program_arguments=args.run_under + [
+            program_arguments=args.run_under
+            + [
                 os.path.join(args.bin_dir, "nightlife-notify"),
                 args.event_name,
             ],
@@ -184,13 +198,19 @@ class LaunchdInstaller(InstallerInterface):
         _install_service(service)
 
     def enable_event(self, args: argparse.Namespace) -> None:
-        logging.debug("Running LaunchdInstaller enable hook for event %s", args.event_name)
+        logging.debug(
+            "Running LaunchdInstaller enable hook for event %s", args.event_name
+        )
         _enable_service(_event_id(args.event_name))
 
     def disable_event(self, args: argparse.Namespace) -> None:
-        logging.debug("Running LaunchdInstaller disable hook for event %s", args.event_name)
+        logging.debug(
+            "Running LaunchdInstaller disable hook for event %s", args.event_name
+        )
         _disable_service(_event_id(args.event_name))
 
     def uninstall_event(self, args: argparse.Namespace) -> None:
-        logging.debug("Running LaunchdInstaller uninstall hook for event %s", args.event_name)
+        logging.debug(
+            "Running LaunchdInstaller uninstall hook for event %s", args.event_name
+        )
         _uninstall_service(_event_id(args.event_name), args.service_dir)

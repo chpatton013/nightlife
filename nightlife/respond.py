@@ -52,13 +52,16 @@ class TopicHandlerResults(BaseModel):
     handlers: list[TopicHandlerResult] = []
 
 
-def _make_topic_handler_status(exit_status: int | None, runtime: float) -> TopicHandlerStatus:
+def _make_topic_handler_status(
+    exit_status: int | None, runtime: float
+) -> TopicHandlerStatus:
     return TopicHandlerStatus(
         success=(exit_status == 0),
         timed_out=(exit_status is None),
         exit_status=exit_status,
         runtime_ms=int(runtime * 1000),
     )
+
 
 def _make_topic_handler_output(output: bytes, max_len: int) -> TopicHandlerOutput:
     return TopicHandlerOutput(
@@ -95,18 +98,22 @@ class RespondTool:
         topic_dir = os.path.join(self.settings.topics_dir, topic_name)
         logging.info("Scanning for topic handlers in %s", topic_dir)
         return sorted(
-            f for f in os.listdir(topic_dir)
+            f
+            for f in os.listdir(topic_dir)
             if os.path.isfile(os.path.join(topic_dir, f))
         )
 
     def _list_topics(self) -> list[str]:
         logging.info("Scanning for topics in %s", self.settings.topics_dir)
         return sorted(
-            f for f in os.listdir(self.settings.topics_dir)
+            f
+            for f in os.listdir(self.settings.topics_dir)
             if os.path.isdir(os.path.join(self.settings.topics_dir, f))
         )
 
-    def _invoke_topic_handler(self, topic_name: str, handler: str, input: bytes | None) -> TopicHandlerResult:
+    def _invoke_topic_handler(
+        self, topic_name: str, handler: str, input: bytes | None
+    ) -> TopicHandlerResult:
         topic_dir = os.path.join(self.settings.topics_dir, topic_name)
         handler_path = os.path.join(topic_dir, handler)
         start_time = time.time()
@@ -130,6 +137,10 @@ class RespondTool:
         return TopicHandlerResult(
             name=handler,
             status=status,
-            stdout=_make_topic_handler_output(stdout, self.settings.handler_output_limit),
-            stderr=_make_topic_handler_output(stderr, self.settings.handler_output_limit),
+            stdout=_make_topic_handler_output(
+                stdout, self.settings.handler_output_limit
+            ),
+            stderr=_make_topic_handler_output(
+                stderr, self.settings.handler_output_limit
+            ),
         )
