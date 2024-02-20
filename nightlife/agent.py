@@ -4,24 +4,18 @@ import threading
 from contextlib import asynccontextmanager
 
 import jwt
-from fastapi import Depends, FastAPI, Request, HTTPException
-from fastapi.security import HTTPBearer
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.responses import PlainTextResponse
+from fastapi.security import HTTPBearer
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from watchdog.observers import Observer
 from watchdog.events import (
     FileSystemEvent,
-    FileSystemMovedEvent,
     FileSystemEventHandler,
+    FileSystemMovedEvent,
 )
+from watchdog.observers import Observer
 
-from .respond import (
-    RespondTool,
-    TopicHandlerResults,
-    TopicHandlers,
-    TopicRegistry,
-)
-
+from .respond import RespondTool, TopicHandlerResults, TopicHandlers, TopicRegistry
 
 logging.basicConfig(
     level=logging.DEBUG if os.getenv("DEBUG") else logging.INFO,

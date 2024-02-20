@@ -32,7 +32,8 @@ def main() -> None:
                 "nightlife.principal:app",
                 f"--host={args.host}",
                 f"--port={args.port}",
-            ] + extra_args,
+            ]
+            + extra_args,
             stdin=sys.stdin,
         )
         returncode = p.returncode

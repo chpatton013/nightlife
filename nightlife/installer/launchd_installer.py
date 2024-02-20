@@ -6,9 +6,9 @@ import os
 from dataclasses import dataclass
 
 from nightlife.config import BIN_HOME, app_file
-from nightlife.system import symlink
 from nightlife.installer.argument_parser import ArgumentParser
 from nightlife.installer.installer_interface import InstallerInterface
+from nightlife.system import symlink
 
 DEFAULT_SERVICE_DIR = os.path.join(os.path.expanduser("~"), "Library/LaunchAgents")
 DOMAIN_TARGET = f"user/{os.getuid()}"

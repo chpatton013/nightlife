@@ -3,8 +3,8 @@ import logging
 import os
 
 from nightlife.config import config_file
-from nightlife.system import copy, symlink, unlink
 from nightlife.installer.installer_interface import InstallerInterface
+from nightlife.system import copy, symlink, unlink
 
 
 def _install_handlers(topic_name: str, handler_paths: list[str]) -> None:

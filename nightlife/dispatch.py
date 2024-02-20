@@ -6,13 +6,9 @@ import urllib.request
 import uuid
 from dataclasses import dataclass, field
 
-from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-    Ed25519PrivateKey,
-)
-from cryptography.hazmat.primitives.serialization import (
-    load_pem_private_key,
-)
 import jwt
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .config import config_file

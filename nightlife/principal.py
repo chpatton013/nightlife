@@ -3,13 +3,12 @@ import logging
 import os
 from collections import defaultdict
 
-from fastapi import FastAPI, Request, HTTPException, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from .dispatch import BroadcastTool, DispatchSettings, TriggerTool
 from .respond import RespondTool
-
 
 logging.basicConfig(
     level=logging.DEBUG if os.getenv("DEBUG") else logging.INFO,

@@ -50,7 +50,9 @@ def main() -> None:
     agent_key_password = b""
     if sys.stdin:
         if sys.stdin.isatty():
-            agent_key_password = input(f"Enter decryption password for agent keyfile (or empty if unencrypted):\n$ ").encode()
+            agent_key_password = input(
+                f"Enter decryption password for agent keyfile (or empty if unencrypted):\n$ "
+            ).encode()
         else:
             logging.info("Reading agent keyfile decryption password from stdin")
             agent_key_password = sys.stdin.buffer.read()
@@ -78,7 +80,7 @@ def main() -> None:
         with urllib.request.urlopen(request) as f:
             sys.stdout.buffer.write(f.read())
     except HTTPError as e:
-        logging.error("%d %s", e.code, e.msg)
+        logging.error("%d %s", e.code, e.reason)
         sys.exit(1)
 
 

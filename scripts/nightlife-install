@@ -16,6 +16,7 @@ def main() -> None:
 
     if which("launchctl") is not None:
         from nightlife.installer import install_launchd
+
         install_launchd()
     else:
         logging.error("Failed to determine correct installer for this system")

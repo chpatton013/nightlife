@@ -3,7 +3,10 @@
 import signal
 
 from nightlife.topic_handler_utils import (
-    pkill, symlink, system_state_file, topic_state_file
+    pkill,
+    symlink,
+    system_state_file,
+    topic_state_file,
 )
 
 NIGHTLIFE_THEMEFILE = topic_state_file("theme", "themefile")

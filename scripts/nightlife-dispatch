@@ -31,7 +31,9 @@ def main() -> None:
     password: bytes | None = None
     if sys.stdin:
         if sys.stdin.isatty():
-            password = input(f"Enter decryption password for private keyfile (or empty if unencrypted):\n$ ").encode()
+            password = input(
+                f"Enter decryption password for private keyfile (or empty if unencrypted):\n$ "
+            ).encode()
         else:
             logging.info("Reading private keyfile decryption password from stdin")
             password = sys.stdin.buffer.read()
