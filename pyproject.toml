@@ -35,15 +35,6 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
 ]
 
-[project.optional-dependencies]
-tests = [
-  "mypy>=1.8",
-  "types-psutil>=5.9",
-]
-dev = [
-  "black>=24.2",
-]
-
 [project.scripts]
 nightlife-agent = "scripts.nightlife-agent:main"
 nightlife-auth = "scripts.nightlife-auth:main"
