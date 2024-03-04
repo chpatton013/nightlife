@@ -1,0 +1,30 @@
+[snippets]
+resources = [
+    # Languages
+    "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/VirtualEnv.gitignore",
+    # Development tools
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Eclipse.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Emacs.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/JetBrains.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/KDevelop4.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Kate.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/NetBeans.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/NotepadPP.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/PuTTY.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/SublimeText.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/TextMate.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Vim.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/VisualStudioCode.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Xcode.gitignore",
+    # Output file types
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Archives.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Backup.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Diff.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Images.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Tags.gitignore",
+    # Operating systems
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Linux.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/Windows.gitignore",
+    "https://raw.githubusercontent.com/github/gitignore/main/Global/macOS.gitignore",
+]
