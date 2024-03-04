@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=69.1"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "nightlife"
@@ -36,15 +36,22 @@ classifiers = [
 ]
 
 [project.scripts]
-nightlife-agent = "scripts.nightlife-agent:main"
-nightlife-auth = "scripts.nightlife-auth:main"
-nightlife-dispatch = "scripts.nightlife-dispatch:main"
-nightlife-install = "scripts.nightlife-install:main"
-nightlife-notify = "scripts.nightlife-notify:main"
-nightlife-principal = "scripts.nightlife-principal:main"
-nightlife-register = "scripts.nightlife-register:main"
-nightlife-respond = "scripts.nightlife-respond:main"
+nightlife-agent = "nightlife.scripts.agent:main"
+nightlife-auth = "nightlife.scripts.auth:main"
+nightlife-dispatch = "nightlife.scripts.dispatch:main"
+nightlife-install = "nightlife.scripts.install:main"
+nightlife-notify = "nightlife.scripts.notify:main"
+nightlife-principal = "nightlife.scripts.principal:main"
+nightlife-register = "nightlife.scripts.register:main"
+nightlife-respond = "nightlife.scripts.respond:main"
 
 [project.urls]
 Repository = "https://github.com/chpatton013/nightlife.git"
 "Bug Tracker" = "https://github.com/chpatton013/nightlife/issues"
+
+[tool.setuptools.packages.find]
+where = ["src/"]
+include = ["nightlife"]
+
+[tool.setuptools.package-data]
+templates = ["*.in"]

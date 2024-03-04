@@ -1,8 +1,8 @@
 import argparse
 import logging
+import subprocess
 import os
-
-# import subprocess
+import plistlib
 from dataclasses import dataclass
 
 from nightlife.config import BIN_HOME, app_file
@@ -34,14 +34,19 @@ def _event_id(event_name: str) -> str:
     return f"chpatton013.nightlife.event-{event_name}"
 
 
-def subprocess_run(cmd, check: bool = False) -> None:
-    """
-    TODO: Restore calls to subprocess.run after sorting out Falcon issues.
-    """
-    logging.info("DRYRUN:%s", " ".join(cmd))
-
-
 LAUNCHD_SERVICE_TEMPLATE = _template_path(app_file("templates"))
+
+
+@dataclass
+class SubprocessExecutor:
+    execute: bool
+    prefix: str
+
+    def run(self, cmd: list[str]) -> None:
+        if self.execute:
+            subprocess.run(cmd, check=True)
+        else:
+            print(self.prefix, " ".join(cmd))
 
 
 @dataclass
@@ -91,58 +96,43 @@ class Service:
         ).render()
 
 
-def _install_service(service: Service) -> None:
-    # TODO: Copy this file if DNE? (instead of symlink always)
-    symlink(LAUNCHD_SERVICE_TEMPLATE, service.template_path)
-
-    logging.debug("Reading service template from %s", service.template_path)
-    with open(service.template_path, "r") as f:
-        template = f.read()
-
-    logging.debug("Rendering template")
-    rendered = service.render(template)
-
-    logging.debug("Writing rendered template to %s", service.service_path)
-    with open(service.service_path, "w") as f:
-        f.write(rendered)
-
-    logging.debug("Loading service %s", service.service_path)
-    subprocess_run(["launchctl", "load", "-w", service.service_path], check=True)
+def _is_crowdstrike_falcon_running() -> bool:
+    try:
+        p = subprocess.run(
+            ["/Applications/Falcon.app/Contents/Resources/falconctl", "info"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+    except subprocess.CalledProcessError:
+        return False
+    doc = plistlib.loads(p.stdout)
+    return doc.get("sensor_loaded")
 
 
-def _enable_service(service_id: str) -> None:
-    service_target = _service_target(service_id)
-
-    logging.debug("Starting service %s", service_target)
-    subprocess_run(["launchctl", "start", service_target], check=True)
-
-    logging.debug("Enabling service %s", service_target)
-    subprocess_run(["launchctl", "enable", service_target], check=True)
-
-
-def _disable_service(service_id: str) -> None:
-    service_target = _service_target(service_id)
-
-    logging.debug("Disabling service %s", service_target)
-    subprocess_run(["launchctl", "disable", service_target], check=True)
-
-    logging.debug("Stopping service %s", service_target)
-    subprocess_run(["launchctl", "stop", service_target], check=True)
-
-
-def _uninstall_service(service_id: str, service_dir: str) -> None:
-    service_path = _service_path(service_id, service_dir)
-
-    logging.debug("Unloading service %s", service_path)
-    subprocess_run(["launchctl", "unload", "-w", service_path], check=True)
-
-    logging.debug("Deleting service file %s", service_path)
-    os.unlink(service_path)
+def _make_executor(args: argparse.Namespace) -> SubprocessExecutor:
+    prefix = ">>>"
+    should_execute = args.force
+    reasons = []
+    if not should_execute:
+        if _is_crowdstrike_falcon_running():
+            reasons.append(
+                "CrowdStrike Falcon is running (Falcon will terminate the installer if it tries to install any launch agents)"
+            )
+            should_execute = False
+    if not should_execute:
+        message = "Nightlife's launchd installer will not execute launchd commands for the following reasons:"
+        for index, reason in enumerate(reasons):
+            message += "\n{:>2}) {}".format(str(index + 1), reason)
+        message += f"\nYou can complete this installation by manually running these commands (lines will be prefixed with '{prefix}')"
+        logging.warning(message)
+    return SubprocessExecutor(execute=should_execute, prefix=prefix)
 
 
 class LaunchdInstaller(InstallerInterface):
     def augment_parser(self, parser: ArgumentParser) -> ArgumentParser:
         parser.root.add_argument("--service-dir", default=DEFAULT_SERVICE_DIR)
+        parser.root.add_argument("--force", action="store_true", default=False)
         parser.install_server.add_argument("--bin-dir", default=BIN_HOME)
         parser.install_event.add_argument("--bin-dir", default=BIN_HOME)
         return parser
@@ -151,6 +141,7 @@ class LaunchdInstaller(InstallerInterface):
         logging.debug(
             "Running LaunchdInstaller install hook for server %s", args.server_name
         )
+        executor = _make_executor(args)
         service = Service(
             service_id=_server_id(args.server_name),
             program_arguments=[
@@ -160,25 +151,30 @@ class LaunchdInstaller(InstallerInterface):
             service_dir=args.service_dir,
             state_dir=args.state_dir,
         )
-        _install_service(service)
+        self._install_service(executor, service)
 
     def enable_server(self, args: argparse.Namespace) -> None:
         logging.debug(
             "Running LaunchdInstaller enable hook for server %s", args.server_name
         )
-        _enable_service(_server_id(args.server_name))
+        executor = _make_executor(args)
+        self._enable_service(executor, _server_id(args.server_name))
 
     def disable_server(self, args: argparse.Namespace) -> None:
         logging.debug(
             "Running LaunchdInstaller disable hook for server %s", args.server_name
         )
-        _disable_service(_server_id(args.server_name))
+        executor = _make_executor(args)
+        self._disable_service(executor, _server_id(args.server_name))
 
     def uninstall_server(self, args: argparse.Namespace) -> None:
         logging.debug(
             "Running LaunchdInstaller uninstall hook for server %s", args.server_name
         )
-        _uninstall_service(_server_id(args.server_name), args.service_dir)
+        executor = _make_executor(args)
+        self._uninstall_service(
+            executor, _server_id(args.server_name), args.service_dir
+        )
 
     def install_event(self, args: argparse.Namespace) -> None:
         logging.debug(
@@ -195,22 +191,73 @@ class LaunchdInstaller(InstallerInterface):
             service_dir=args.service_dir,
             state_dir=args.state_dir,
         )
-        _install_service(service)
+        executor = _make_executor(args)
+        self._install_service(executor, service)
 
     def enable_event(self, args: argparse.Namespace) -> None:
         logging.debug(
             "Running LaunchdInstaller enable hook for event %s", args.event_name
         )
-        _enable_service(_event_id(args.event_name))
+        executor = _make_executor(args)
+        self._enable_service(executor, _event_id(args.event_name))
 
     def disable_event(self, args: argparse.Namespace) -> None:
         logging.debug(
             "Running LaunchdInstaller disable hook for event %s", args.event_name
         )
-        _disable_service(_event_id(args.event_name))
+        executor = _make_executor(args)
+        self._disable_service(executor, _event_id(args.event_name))
 
     def uninstall_event(self, args: argparse.Namespace) -> None:
         logging.debug(
             "Running LaunchdInstaller uninstall hook for event %s", args.event_name
         )
-        _uninstall_service(_event_id(args.event_name), args.service_dir)
+        executor = _make_executor(args)
+        self._uninstall_service(executor, _event_id(args.event_name), args.service_dir)
+
+    def _install_service(self, executor: SubprocessExecutor, service: Service) -> None:
+        # TODO: Copy this file if DNE? (instead of symlink always)
+        symlink(LAUNCHD_SERVICE_TEMPLATE, service.template_path)
+
+        logging.debug("Reading service template from %s", service.template_path)
+        with open(service.template_path, "r") as f:
+            template = f.read()
+
+        logging.debug("Rendering template")
+        rendered = service.render(template)
+
+        logging.debug("Writing rendered template to %s", service.service_path)
+        with open(service.service_path, "w") as f:
+            f.write(rendered)
+
+        logging.debug("Loading service %s", service.service_path)
+        executor.run(["launchctl", "load", "-w", service.service_path])
+
+    def _enable_service(self, executor: SubprocessExecutor, service_id: str) -> None:
+        service_target = _service_target(service_id)
+
+        logging.debug("Starting service %s", service_target)
+        executor.run(["launchctl", "start", service_target])
+
+        logging.debug("Enabling service %s", service_target)
+        executor.run(["launchctl", "enable", service_target])
+
+    def _disable_service(self, executor: SubprocessExecutor, service_id: str) -> None:
+        service_target = _service_target(service_id)
+
+        logging.debug("Disabling service %s", service_target)
+        executor.run(["launchctl", "disable", service_target])
+
+        logging.debug("Stopping service %s", service_target)
+        executor.run(["launchctl", "stop", service_target])
+
+    def _uninstall_service(
+        self, executor: SubprocessExecutor, service_id: str, service_dir: str
+    ) -> None:
+        service_path = _service_path(service_id, service_dir)
+
+        logging.debug("Unloading service %s", service_path)
+        executor.run(["launchctl", "unload", "-w", service_path])
+
+        logging.debug("Deleting service file %s", service_path)
+        os.unlink(service_path)
