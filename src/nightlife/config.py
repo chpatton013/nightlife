@@ -8,12 +8,12 @@ BIN_HOME = os.getenv(
 CONFIG_HOME = os.getenv(
     "XDG_CONFIG_HOME", os.path.join(os.path.expanduser("~"), ".config")
 )
-CONFIG_DIR = os.path.join(CONFIG_HOME, "nightlife")
+CONFIG_DIR = os.getenv("NIGHTLIFE_CONFIG", os.path.join(CONFIG_HOME, "nightlife"))
 
 STATE_HOME = os.getenv(
     "XDG_STATE_HOME", os.path.join(os.path.expanduser("~"), ".local/state")
 )
-STATE_DIR = os.path.join(STATE_HOME, "nightlife")
+STATE_DIR = os.getenv("NIGHTLIFE_STATE", os.path.join(STATE_HOME, "nightlife"))
 
 
 def app_file(*parts: str) -> str:
